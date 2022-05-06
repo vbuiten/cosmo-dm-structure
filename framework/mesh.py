@@ -15,6 +15,8 @@ class Grid:
             Overdensity field in the box.
 
     Methods:
+        potential(Om0, scale_factor):
+            Computes the potential at each point in the grid.
         randomDensities(std=0.001):
             Sets random densities following a Gaussian distribution of mean one and standard deviation std.
 
@@ -110,6 +112,28 @@ class Grid:
 
         else:
             raise TypeError("Given overdensity should contain the density evaluated at each grid midpoint.")
+
+
+    def potential(self, Om0, scale_factor):
+        '''
+        Compute the potential at each grid cell using FFT and IFFT.
+
+        :param Om0: float
+        :param scale_factor: float
+        :return:
+            potential_ifft: ndarray of shape (size, size, size) or (size, size), depending on the dimension.
+                The computed potential field.
+        '''
+
+        overdens_fft = np.fft.fftn(self.overdensities)
+        prefactor = -3/2 * Om0 / scale_factor
+
+        # what is the k-vector in this code? need it in the factor! use a placeholder 1 for now
+        k2 = 1.
+        potential_fft = prefactor / k2 * overdens_fft
+        potential_ifft = np.fft.ifft(potential_fft)
+
+        return potential_ifft
 
 
     def randomDensities(self, std=0.001):
