@@ -10,6 +10,8 @@ class ParticleGrid:
         '''
         :param size: int
                 Linear size of the box in terms of grid cells on each side
+        :param dim: int
+                Dimensions of the box. Should be either 2 or 3.
         '''
 
         if isinstance(size, int):
@@ -40,10 +42,24 @@ class ParticleGrid:
 
     @property
     def densities(self):
+        '''
+        Getter for the densities property. Gives the density at each point in the grid.
+
+        :return:
+            self._densities: ndarray of shape (size, size, size) or (size, size)
+                The density field.
+        '''
         return self._densities
 
     @densities.setter
     def densities(self, dens):
+        '''
+        Setter for the densities property.
+
+        :param dens: ndarray of shape (size, size, size) or (size, size) (depending on dimension)
+                The density field.
+        :return:
+        '''
 
         if isinstance(dens, np.ndarray) and dens.shape == self.x_mids.shape:
             self._densities = dens
@@ -54,10 +70,25 @@ class ParticleGrid:
 
     @property
     def overdensities(self):
+        '''
+        Getter for the overdensity at each point in the grid.
+
+        :return:
+            self._overdensities: ndarray of shape (size, size, size) or (size, size), depending on the dimension.
+                The overdensity field.
+        '''
+
         return self._overdensities
 
     @overdensities.setter
     def overdensities(self, overdens):
+        '''
+        Setter for the overdensities property.
+
+        :param overdens: ndarray of shape (size, size, size) or (size, size) (depending on dimension)
+                The overdensity field.
+        :return:
+        '''
 
         if isinstance(overdens, np.ndarray) and overdens.shape == self.x_mids.shape:
             self._overdensities = overdens
@@ -68,6 +99,14 @@ class ParticleGrid:
 
 
     def randomDensities(self, std=0.001):
+        '''
+        Randomly set initial densities in the grid. The density values are drawn from a Gaussian distribution with
+        mean 1 and standard deviation std.
+
+        :param std: float
+                Standard deviation of the Gaussian.
+        :return:
+        '''
 
         rng = np.random.default_rng()
         self.densities = rng.normal(1, std, size=self._densities.shape)
