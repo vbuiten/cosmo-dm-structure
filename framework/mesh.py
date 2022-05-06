@@ -1,8 +1,8 @@
 import numpy as np
 
-class ParticleGrid:
+class Grid:
     '''
-    Particle Mesh grid containing the density of each grid cell.
+    Grid containing the density of each grid cell.
 
     Attributes:
         size: int
