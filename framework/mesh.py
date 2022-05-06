@@ -30,8 +30,9 @@ class ParticleGrid:
         else:
             self.x_mids, self.y_mids, self.z_mids = np.meshgrid(mids, mids, mids)
 
-        # initialise an empty piece of universe
-        self._densities = np.zeros_like(self.x_mids)
+        # initialise a universe with uniform density 1
+        self._densities = np.ones_like(self.x_mids)
+        self._overdensities = self._densities - 1
 
         # for now use nearest grid point density assignment
         # i.e. particles are point-like
@@ -46,9 +47,24 @@ class ParticleGrid:
 
         if isinstance(dens, np.ndarray) and dens.shape == self.x_mids.shape:
             self._densities = dens
+            self._overdensities = dens - 1
 
         else:
             raise TypeError("Given density should contain the density evaluated at each grid midpoint.")
+
+    @property
+    def overdensities(self):
+        return self._overdensities
+
+    @overdensities.setter
+    def overdensities(self, overdens):
+
+        if isinstance(overdens, np.ndarray) and overdens.shape == self.x_mids.shape:
+            self._overdensities = overdens
+            self._densities = overdens + 1
+
+        else:
+            raise TypeError("Given overdensity should contain the density evaluated at each grid midpoint.")
 
 
     def randomDensities(self, std=0.001):
