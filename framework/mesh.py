@@ -4,6 +4,20 @@ class ParticleGrid:
     '''
     Particle Mesh grid containing the density of each grid cell.
 
+    Attributes:
+        size: int
+            Linear size of the box in terms of grid cells on each side.
+        dim: int
+            Dimensions of the box.
+        densities: ndarray of shape (size, size, size) or (size, size), depending on the dimensions.
+            Density field in the box.
+        overdensities: ndarray of shape (size, size, size) or (size, size), depending on the dimensions.
+            Overdensity field in the box.
+
+    Methods:
+        randomDensities(std=0.001):
+            Sets random densities following a Gaussian distribution of mean one and standard deviation std.
+
     '''
 
     def __init__(self, size, dim=3):
@@ -104,7 +118,7 @@ class ParticleGrid:
         mean 1 and standard deviation std.
 
         :param std: float
-                Standard deviation of the Gaussian.
+                Standard deviation of the Gaussian. Default is 0.001.
         :return:
         '''
 
