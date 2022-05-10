@@ -137,16 +137,16 @@ class Grid:
 
         # inefficient code; see if we can improve it with numpy later
         if self.dim == 2:
-            k_squared = np.zeros_like(overdens_fft.shape)
-            for i in range(freqs):
-                for j in range(freqs):
+            k_squared = np.zeros_like(overdens_fft)
+            for i in range(freqs.size):
+                for j in range(freqs.size):
                     k_squared[i,j] = freqs[i]**2 + freqs[j]**2
 
         else:
-            k_squared = np.zeros_like(overdens_fft.shape)
-            for i in range(freqs):
-                for j in range(freqs):
-                    for l in range(freqs):
+            k_squared = np.zeros_like(overdens_fft)
+            for i in range(freqs.size):
+                for j in range(freqs.size):
+                    for l in range(freqs.size):
                         k_squared[i,j,l] = freqs[i]**2 + freqs[j]**2 + freqs[l]**2
 
         potential_fft = prefactor / k_squared * overdens_fft
@@ -174,3 +174,28 @@ class Grid:
 
         rng = np.random.default_rng()
         self.densities = rng.normal(1, std, size=self._densities.shape)
+        
+        
+    def exponentialDensityProfile(self, scale_length):
+        '''
+        Set an exponential density profile centred at x = y = z = size/2. The profile is normalised such that the mean
+        density in the field is one.
+
+        :param scale_length: float
+                Scale length setting the "width" of the exponential profile.
+        :return:
+        '''
+        
+        mid = self.size / 2
+        
+        if self.dim == 2:
+            distance_squared = (self.x_mids - mid)**2 + (self.y_mids - mid)**2
+            
+        else:
+            distance_squared = (self.y_mids - mid)**2 + (self.y_mids - mid)**2 + (self.z_mids - mid)**2
+
+        distance = np.sqrt(distance_squared)
+        densities = np.exp(-distance / scale_length)
+
+        # normalise so that the average is 1
+        self.densities = densities / np.mean(densities)
