@@ -55,3 +55,31 @@ class ParticleSet:
 
         else:
             raise TypeError("Argument must be of shape (n_particles, dim).")
+
+
+    def uniformRandomPositions(self, box_size):
+        '''
+        Draw random particle positions from a uniform distribution.
+
+        :param box_size: int
+                Linear size of the box in which the particles live.
+        :return:
+        '''
+
+        if isinstance(box_size, int):
+            self.size = box_size
+        else:
+            raise TypeError("Argument must be an integer.")
+
+        rng = np.random.default_rng()
+        self.positions = rng.uniform(0, box_size, size=(self.n_particles, self.dim))
+
+
+    def zeroMomenta(self):
+        '''
+        Set all particle momenta to zero.
+
+        :return:
+        '''
+
+        self.momenta = np.zeros((self.n_particles, self.dim))

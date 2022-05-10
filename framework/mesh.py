@@ -19,6 +19,8 @@ class Grid:
             Computes the potential at each point in the grid.
         randomDensities(std=0.001):
             Sets random densities following a Gaussian distribution of mean one and standard deviation std.
+        exponentialDensityProfile(scale_length):
+            Sets an exponential density profile with scale parameter scale_length.
 
     '''
 
