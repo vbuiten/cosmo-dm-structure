@@ -125,13 +125,39 @@ class Grid:
                 The computed potential field.
         '''
 
-        overdens_fft = np.fft.fftn(self.overdensities)
+        overdens = np.fft.ifftshift(self.overdensities)
+        overdens_fft = np.fft.fftn(overdens)
+        overdens_fft = np.fft.fftshift(overdens_fft)
+
+        print ("Shape of FFT: {}".format(overdens_fft.shape))
         prefactor = -3/2 * Om0 / scale_factor
 
-        # what is the k-vector in this code? need it in the factor! use a placeholder 1 for now
-        k2 = 1.
-        potential_fft = prefactor / k2 * overdens_fft
-        potential_ifft = np.fft.ifft(potential_fft)
+        # compute the square of the k-vector of grid cell in k-space
+        freqs = 2 * np.pi * np.fft.fftfreq(overdens_fft.shape[0], 1.)
+
+        # inefficient code; see if we can improve it with numpy later
+        if self.dim == 2:
+            k_squared = np.zeros_like(overdens_fft.shape)
+            for i in range(freqs):
+                for j in range(freqs):
+                    k_squared[i,j] = freqs[i]**2 + freqs[j]**2
+
+        else:
+            k_squared = np.zeros_like(overdens_fft.shape)
+            for i in range(freqs):
+                for j in range(freqs):
+                    for l in range(freqs):
+                        k_squared[i,j,l] = freqs[i]**2 + freqs[j]**2 + freqs[l]**2
+
+        potential_fft = prefactor / k_squared * overdens_fft
+
+        # manually set the potential (in k-space) to 0 in places where k^2 = 0
+        potential_fft[k_squared == 0] = 0
+
+        # compute the inverse FFT to get the potential in real space
+        potential_fft = np.fft.ifftshift(potential_fft)
+        potential_ifft = np.fft.ifftn(potential_fft)
+        potential_ifft = np.fft.fftshift(potential_ifft)
 
         return potential_ifft
 
