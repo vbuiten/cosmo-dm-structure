@@ -2,7 +2,7 @@ import numpy as np
 from numba import jit
 
 
-@jit(nopython=True)
+#@jit(nopython=True)
 def countParticlesInCell(positions, cellmids):
 
     dim = len(cellmids)
@@ -44,9 +44,10 @@ def nearestGridPointDensity(positions, meshgrid):
             raise TypeError("'meshgrid' must be a list of length 2 or 3.")
     '''
 
+    # this bit of code currently doesn't work with numba
     n_particles = len(positions)
-    x1d = meshgrid[0].ravel()
-    y1d = meshgrid[1].ravel()
+    x1d = meshgrid[0][0,:]
+    y1d = meshgrid[1][:,0]
 
     dim = len(meshgrid)
 
@@ -56,6 +57,6 @@ def nearestGridPointDensity(positions, meshgrid):
     density = countParticlesInCell(positions, [x1d, y1d])
 
     # normalise the density so that the mean is 1
-    density = density / np.mean(density)
+    normdensity = density / np.mean(density)
 
-    return density
+    return normdensity
