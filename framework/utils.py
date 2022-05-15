@@ -2,7 +2,7 @@ import numpy as np
 from numba import jit
 
 
-#@jit(nopython=True)
+@jit(nopython=True)
 def countParticlesInCell(positions, cellmids):
 
     dim = len(cellmids)
@@ -16,8 +16,8 @@ def countParticlesInCell(positions, cellmids):
 
     if dim == 2:
 
-        for i, x in enumerate(xmids):
-            for j, y in enumerate(ymids):
+        for j, x in enumerate(xmids):
+            for i, y in enumerate(ymids):
 
                 in_cell = (positions[:,0] > (x - 0.5)) & (positions[:,0] < (x + 0.5)) \
                     & (positions[:,1] > (y - 0.5)) & (positions[:,1] < (y + 0.5))
@@ -27,8 +27,8 @@ def countParticlesInCell(positions, cellmids):
     return density
 
 
-#@jit(nopython=True)
-def nearestGridPointDensity(positions, meshgrid):
+@jit(nopython=True)
+def nearestGridPointDensity(positions, mids1d):
 
     '''
     if not isinstance(positions, np.ndarray):
@@ -46,17 +46,18 @@ def nearestGridPointDensity(positions, meshgrid):
 
     # this bit of code currently doesn't work with numba
     n_particles = len(positions)
-    x1d = meshgrid[0][0,:]
-    y1d = meshgrid[1][:,0]
+    x1d = mids1d
+    y1d = mids1d
 
-    dim = len(meshgrid)
+    dim = positions.shape[-1]
 
     if dim == 3:
-        z1d = meshgrid[2].ravel()
+        z1d = mids1d
 
     density = countParticlesInCell(positions, [x1d, y1d])
 
     # normalise the density so that the mean is 1
-    normdensity = density / np.mean(density)
+    #normdensity = density / np.mean(density)
 
-    return normdensity
+    #return normdensity
+    return density

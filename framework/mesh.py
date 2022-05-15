@@ -43,6 +43,7 @@ class Grid:
             raise ValueError("dim must be an integer with value 2 or 3.")
 
         mids = np.arange(0.5, size+0.5)
+        self.mids1d = mids
 
         if self.dim == 2:
             self.x_mids, self.y_mids = np.meshgrid(mids, mids)
@@ -52,7 +53,6 @@ class Grid:
 
         # initialise a universe with uniform density 1
         self._densities = np.ones_like(self.x_mids)
-        self._overdensities = self._densities - 1
 
         # for now use nearest grid point density assignment
         # i.e. particles are point-like
@@ -131,8 +131,11 @@ class Grid:
         overdens_fft = np.fft.fftn(overdens)
         overdens_fft = np.fft.fftshift(overdens_fft)
 
-        print ("Shape of FFT: {}".format(overdens_fft.shape))
-        prefactor = -3/2 * Om0 / scale_factor
+        #print ("Shape of FFT: {}".format(overdens_fft.shape))
+        #prefactor = -3/2 * Om0 / scale_factor
+
+        # compute the Green's function
+        prefactor = -3/8 * Om0 / scale_factor
 
         # compute the square of the k-vector of grid cell in k-space
         freqs = 2 * np.pi * np.fft.fftfreq(overdens_fft.shape[0], 1.)
@@ -140,18 +143,23 @@ class Grid:
         # inefficient code; see if we can improve it with numpy later
         if self.dim == 2:
             k_squared = np.zeros_like(overdens_fft)
+            sine_terms = np.zeros_like(overdens_fft)
             for i in range(freqs.size):
                 for j in range(freqs.size):
                     k_squared[i,j] = freqs[i]**2 + freqs[j]**2
+                    sine_terms[i,j] = np.sin(freqs[i] / self.size)**2 + np.sin(freqs[j] / self.size)**2
 
         else:
             k_squared = np.zeros_like(overdens_fft)
+            sine_terms = np.zeros_like(overdens_fft)
             for i in range(freqs.size):
                 for j in range(freqs.size):
                     for l in range(freqs.size):
                         k_squared[i,j,l] = freqs[i]**2 + freqs[j]**2 + freqs[l]**2
+                        sine_terms[i,j,l] = np.sin(freqs[i] / self.size)**2 + np.sin(freqs[j] / self.size)**2 + np.sin(freqs[l] / self.size)**2
 
-        potential_fft = prefactor / k_squared * overdens_fft
+        #potential_fft = prefactor / k_squared * overdens_fft
+        potential_fft = prefactor / sine_terms * overdens_fft
 
         # manually set the potential (in k-space) to 0 in places where k^2 = 0
         potential_fft[k_squared == 0] = 0

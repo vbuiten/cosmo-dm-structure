@@ -37,7 +37,8 @@ class ParticleSet:
     def positions(self, comoving_coords):
 
         if isinstance(comoving_coords, np.ndarray) and comoving_coords.shape == (self.n_particles, self.dim):
-            self._positions = comoving_coords
+            # implement periodic boundary conditions such that the particles stay inside the box
+            self._positions = comoving_coords % self.size
 
         else:
             raise TypeError("Argument must be of shape (n_particles, dim).")
