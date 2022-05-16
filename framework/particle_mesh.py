@@ -24,9 +24,5 @@ class ParticleMesh:
     def densityFromParticles(self):
 
         # use the Nearest Grid Point method for now
-        if self.dim == 2:
-            self.grid.densities = nearestGridPointDensity(self.particles.positions,
-                                                          self.grid.mids1d)
-
-        else:
-            pass
+        self.grid.densities = nearestGridPointDensity(self.particles.positions,
+                                                        self.grid.mids_tuple)
