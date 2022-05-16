@@ -2,8 +2,7 @@ import numpy as np
 from framework.mesh import Grid
 from framework.particles import ParticleSet
 from framework.particle_mesh import ParticleMesh
-from scipy.interpolate import RegularGridInterpolator
-from simulation.utils import friedmannFactor
+from simulation.utils import *
 from IPython import embed
 
 class Simulator:
@@ -26,10 +25,9 @@ class Simulator:
         # compute the momenta at half-step n = -1/2
         self.part_mesh.densityFromParticles()
         potential = self.part_mesh.grid.potential(self.Om0, scale_factor)
-        acceleration_grid = - np.array(np.gradient(potential.real)).T
-        interpolator = RegularGridInterpolator([self.part_mesh.grid.mids1d, self.part_mesh.grid.mids1d],
-                                               acceleration_grid, fill_value=0, bounds_error=False)
-        acceleration_particles = interpolator(self.part_mesh.particles.positions)
+
+        acceleration_particles = particlesAccelerationFromPotential(self.part_mesh.grid.mids_tuple, potential,
+                                                                    self.part_mesh.particles.positions)
 
         f_factor = friedmannFactor(scale_factor, self.Om0, self.Ode0, self.Ok0)
         momenta_minus_half = self.part_mesh.particles.momenta - f_factor * acceleration_particles * (self.timestep / 2)
@@ -43,10 +41,9 @@ class Simulator:
         # compute the momenta at half-step n/2 + 1/2
         self.part_mesh.densityFromParticles()
         potential = self.part_mesh.grid.potential(self.Om0, scale_factor)
-        acceleration_grid = - np.array(np.gradient(potential.real)).T
-        interpolator = RegularGridInterpolator([self.part_mesh.grid.mids1d, self.part_mesh.grid.mids1d],
-                                               acceleration_grid, fill_value=0, bounds_error=False)
-        acceleration_particles = interpolator(self.part_mesh.particles.positions)
+
+        acceleration_particles = particlesAccelerationFromPotential(self.part_mesh.grid.mids_tuple, potential,
+                                                                    self.part_mesh.particles.positions)
 
         f_factor = friedmannFactor(scale_factor, self.Om0, self.Ode0, self.Ok0)
 
@@ -65,10 +62,8 @@ class Simulator:
         half_scale_factor = scale_factor + self.timestep / 2
         f_factor_plushalf = friedmannFactor(half_scale_factor, self.Om0, self.Ode0, self.Ok0)
 
-        acceleration_grid = - np.array(np.gradient(potential.real)).T
-        interpolator = RegularGridInterpolator([self.part_mesh.grid.mids1d, self.part_mesh.grid.mids1d],
-                                               acceleration_grid, fill_value=0., bounds_error=False)
-        acceleration_particles = interpolator(self.part_mesh.particles.positions)
+        acceleration_particles = particlesAccelerationFromPotential(self.part_mesh.grid.mids_tuple, potential,
+                                                                    self.part_mesh.particles.positions)
 
         new_mom = self.part_mesh.particles.momenta + f_factor_n * acceleration_particles * self.timestep
         new_pos = self.part_mesh.particles.positions + f_factor_plushalf * new_mom * self.timestep / half_scale_factor**2
@@ -85,7 +80,7 @@ class Simulator:
         for a in scale_factors:
             self.step(a)
 
-            if abs((a - self.scale_factor) % 0.001) < 1e-4:
+            if abs((a - self.scale_factor) % 0.001) < 1e-5:
                 print ("Scale factor:", np.around(a,3))
 
         self.forwardsEulerHalfStep(scale_end)

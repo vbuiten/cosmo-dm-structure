@@ -46,10 +46,12 @@ class Grid:
         self.mids1d = mids
 
         if self.dim == 2:
-            self.x_mids, self.y_mids = np.meshgrid(mids, mids)
+            self.mids_tuple = (mids, mids)
+            self.x_mids, self.y_mids = np.meshgrid(*self.mids_tuple)
 
         else:
-            self.x_mids, self.y_mids, self.z_mids = np.meshgrid(mids, mids, mids)
+            self.mids_tuple = (mids, mids, mids)
+            self.x_mids, self.y_mids, self.z_mids = np.meshgrid(*self.mids_tuple)
 
         # initialise a universe with uniform density 1
         self._densities = np.ones_like(self.x_mids)
@@ -81,7 +83,7 @@ class Grid:
 
         if isinstance(dens, np.ndarray) and dens.shape == self.x_mids.shape:
             self._densities = dens
-            self._overdensities = dens - 1
+            self._overdensities = dens/np.mean(dens) - 1
 
         else:
             raise TypeError("Given density should contain the density evaluated at each grid midpoint.")
@@ -110,7 +112,7 @@ class Grid:
 
         if isinstance(overdens, np.ndarray) and overdens.shape == self.x_mids.shape:
             self._overdensities = overdens
-            self._densities = overdens + 1
+            #self._densities = overdens + 1
 
         else:
             raise TypeError("Given overdensity should contain the density evaluated at each grid midpoint.")
