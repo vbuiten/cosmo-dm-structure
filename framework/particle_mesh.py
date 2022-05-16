@@ -1,10 +1,10 @@
 import numpy as np
 from framework.mesh import Grid
 from framework.particles import ParticleSet
-from framework.utils import nearestGridPointDensity
+from framework.utils import *
 
 class ParticleMesh:
-    def __init__(self, grid, particles):
+    def __init__(self, grid, particles, method="NGP"):
 
         if isinstance(grid, Grid):
             self.grid = grid
@@ -20,9 +20,18 @@ class ParticleMesh:
         self.n_particles = self.particles.n_particles
         self.size = self.grid.size
 
+        if method == "NGP" or method == "CIC":
+            self.method = method
+        else:
+            raise ValueError("Method must be 'NGP' or 'CIC'.")
+
 
     def densityFromParticles(self):
 
-        # use the Nearest Grid Point method for now
-        self.grid.densities = nearestGridPointDensity(self.particles.positions,
-                                                        self.grid.mids_tuple)
+        if self.method == "NGP":
+            # use the Nearest Grid Point method for now
+            self.grid.densities = nearestGridPointDensity(self.particles.positions,
+                                                            self.grid.mids_tuple)
+
+        elif self.method == "CIC":
+            self.grid.densities = cloudInCellDensity(self.particles.positions, self.grid.mids_tuple)

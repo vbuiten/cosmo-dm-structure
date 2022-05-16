@@ -6,15 +6,15 @@ from framework.particle_mesh import ParticleMesh
 from simulation.simulator import Simulator
 import numpy as np
 
-grid = Grid(15, 2)
-particles = ParticleSet(15, 2, 2000)
+grid = Grid(5, 2)
+particles = ParticleSet(5, 2, 300)
 #particles.positions = np.array([[20,20], [40,25]])
 particles.uniformRandomPositions()
 #particles.positions = np.random.normal((25,25), (10,10), size=(128,2))
 particles.zeroMomenta()
 #particles.momenta = np.random.normal(0., 1., size=particles.positions.shape)
 
-pm = ParticleMesh(grid, particles)
+pm = ParticleMesh(grid, particles, method="CIC")
 pm.densityFromParticles()
 
 fig, ax = plt.subplots(dpi=240)
@@ -29,8 +29,8 @@ ax.set_title("Initial Overdensities at $a = 0.00001$")
 fig.show()
 
 # evolve the system
-sim = Simulator(pm, 0.00001, 0.000001, Om0=.3, Ode0=.7, Ok0=0.)
-sim.evolve(.5)
+sim = Simulator(pm, 0.00001, 0.00001, Om0=.3, Ode0=.7, Ok0=0.)
+sim.evolve(.2)
 
 fig2, ax2 = plt.subplots(dpi=240)
 ax2.set_aspect("equal")
@@ -40,5 +40,5 @@ ax2.plot(particles.positions[:,0], particles.positions[:,1], c="black", marker="
 cbar2 = fig2.colorbar(im2, ax=ax2, label=r"$\delta$")
 ax2.set_xlabel("x")
 ax2.set_ylabel("y")
-ax2.set_title(r"Overdensity Field at $a = 0.5$")
+ax2.set_title(r"Overdensity Field at $a = 0.2$")
 fig2.show()
