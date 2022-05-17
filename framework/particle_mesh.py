@@ -4,7 +4,7 @@ from framework.particles import ParticleSet
 from framework.utils import *
 
 class ParticleMesh:
-    def __init__(self, grid, particles, method="NGP"):
+    def __init__(self, grid, particles, method="CIC"):
 
         if isinstance(grid, Grid):
             self.grid = grid
@@ -34,4 +34,5 @@ class ParticleMesh:
                                                             self.grid.mids_tuple)
 
         elif self.method == "CIC":
-            self.grid.densities = cloudInCellDensity(self.particles.positions, self.grid.mids_tuple)
+            self.grid.densities = cloudInCellDensity(self.particles.positions, self.grid.mids_tuple,
+                                                     self.size)

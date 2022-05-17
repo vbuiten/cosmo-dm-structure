@@ -53,31 +53,44 @@ def nearestGridPointDensity(positions, mids_tuple):
 
 
 @jit(nopython=False)
-def cloudInCellDensity(positions, mids_tuple):
+def cloudInCellDensity(positions, mids_tuple, size):
 
     dim = len(mids_tuple)
 
     if dim == 2:
-        density = np.zeros((len(mids_tuple[0]), len(mids_tuple[1])))
-    #density = np.zeros((len(mids_tuple[i]) for i in range(dim)))
 
-    # for each particle we need to identify the (Cartesian!) index of its parent cell
-    # and of all neighbouring parent cells it affects
+        X_mids, Y_mids = np.meshgrid(mids_tuple[0], mids_tuple[1])
+
+        density = np.zeros((len(mids_tuple[0]), len(mids_tuple[1])))
+
+    else:
+        X_mids, Y_mids, Z_mids = np.meshgrid(mids_tuple[0], mids_tuple[1], mids_tuple[2])
+        density = np.zeros((len(mids_tuple[0]), len(mids_tuple[1]), len(mids_tuple[2])))
+
+    # find the 4 (2D) or 8 (3D) nearest gridpoints
+    # calculate the distance to these gridpoints
 
     if dim == 2:
         for pos in positions:
-            #parent_cell = (abs(pos[0] - mids_tuple[0]) < 0.5) & (abs(pos[1] - mids_tuple[1]) < 0.5)
-            dist_x = pos[0] - mids_tuple[0]
-            dist_y = pos[1] - mids_tuple[1]
-            idx_x_parent = abs(dist_x) < 0.5
-            idx_y_parent = abs(dist_y) < 0.5
-            density[idx_y_parent, idx_x_parent] += (1 - dist_x[idx_x_parent]) * (1 - dist_y[idx_y_parent])
+
+            abs_dist_x = np.abs((pos[0] - X_mids)) % (size - 1)
+            abs_dist_y = np.abs((pos[1] - Y_mids)) % (size - 1)
+
+            nearest_cells = (abs_dist_x < 1.) & (abs_dist_y < 1.)
+            density[nearest_cells] += ((abs_dist_x[nearest_cells] + 0.5) % 1) * ((abs_dist_y[nearest_cells] + 0.5) % 1)
 
 
     else:
         for pos in positions:
-            parent_cell = (abs(pos[0] - mids_tuple[0]) < 0.5) & (abs(pos[1] - mids_tuple[1]) < 0.5) \
-                          & (abs(pos[2] - mids_tuple[2]) < 0.5)
+
+            abs_dist_x = np.abs((pos[0] - X_mids)) % (size - 1)
+            abs_dist_y = np.abs((pos[1] - Y_mids)) % (size - 1)
+            abs_dist_z = np.abs((pos[2] - Z_mids)) % (size - 1)
+
+            nearest_cells = (abs_dist_x < 1.) & (abs_dist_y < 1.) & (abs_dist_z < 1.)
+            density[nearest_cells] += ((abs_dist_x[nearest_cells] + 0.5) % 1) \
+                                      * ((abs_dist_y[nearest_cells] + 0.5) % 1) \
+                                      * ((abs_dist_z[nearest_cells] + 0.5) % 1)
 
 
     return density

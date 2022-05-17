@@ -6,12 +6,12 @@ from framework.particle_mesh import ParticleMesh
 from simulation.simulator import Simulator
 import numpy as np
 
-grid = Grid(5, 3)
-particles = ParticleSet(5, 3, 128)
+grid = Grid(10, 3)
+particles = ParticleSet(10, 3, 1000)
 particles.uniformRandomPositions()
 particles.zeroMomenta()
 
-pm = ParticleMesh(grid, particles)
+pm = ParticleMesh(grid, particles, method="CIC")
 pm.densityFromParticles()
 
 fig = plt.figure(dpi=240)
@@ -24,8 +24,8 @@ ax.set_title("Initial Overdensities at $a = 0.00001$")
 fig.show()
 
 # evolve the system
-sim = Simulator(pm, 0.00001, 0.000001, Om0=.3, Ode0=.7, Ok0=0.)
-sim.evolve(1.)
+sim = Simulator(pm, 0.00001, 0.00001, Om0=.3, Ode0=.7, Ok0=0.)
+sim.evolve(.5)
 
 fig2 = plt.figure(dpi=240)
 ax2 = fig2.add_subplot(projection="3d")
