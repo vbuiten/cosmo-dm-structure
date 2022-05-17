@@ -7,6 +7,9 @@ from framework.particle_mesh import ParticleMesh
 from simulation.simulator import Simulator
 import numpy as np
 
+datafolder = "/net/vdesk/data2/buiten/COP/cosmo_sims_data/"
+filename = datafolder+"size10_N1000_test.hdf5"
+
 grid = Grid(10, 2)
 particles = ParticleSet(10, 2, 1000)
 #particles.positions = np.array([[20,20], [40,25]])
@@ -33,9 +36,9 @@ fig.show()
 
 # evolve the system
 a_step = 0.00001
-a_end = .3
+a_end = .1
 sim = Simulator(pm, a_start, a_step, Om0=.3, Ode0=.7, Ok0=0.)
-sim.evolve(a_end)
+sim.evolve(a_end, savefile=filename)
 
 fig2, ax2 = plt.subplots(dpi=240)
 ax2.set_aspect("equal")
