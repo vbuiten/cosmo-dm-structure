@@ -6,6 +6,9 @@ from framework.particle_mesh import ParticleMesh
 from simulation.simulator import Simulator
 import numpy as np
 
+folder = "/net/vdesk/data2/buiten/COP/cosmo_sims_data/"
+savefile = folder+"size10_N1000_test.hdf5"
+
 grid = Grid(10, 3)
 particles = ParticleSet(10, 3, 1000)
 particles.uniformRandomPositions()
@@ -24,8 +27,8 @@ ax.set_title("Initial Overdensities at $a = 0.00001$")
 fig.show()
 
 # evolve the system
-sim = Simulator(pm, 0.00001, 0.00001, Om0=.3, Ode0=.7, Ok0=0.)
-sim.evolve(.5)
+sim = Simulator(pm, 0.0001, 0.0001, Om0=.3, Ode0=.7, Ok0=0.)
+sim.evolve(.3, savefile=savefile)
 
 fig2 = plt.figure(dpi=240)
 ax2 = fig2.add_subplot(projection="3d")

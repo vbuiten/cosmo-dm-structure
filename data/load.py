@@ -2,15 +2,15 @@ import numpy as np
 import h5py
 
 class History:
-    def __init__(self, savefile):
+    def __init__(self, datafile):
 
-        if isinstance(savefile):
-            if not savefile.endswith(".hdf5"):
-                savefile = savefile + ".hdf5"
+        if isinstance(datafile, str):
+            if not datafile.endswith(".hdf5"):
+                datafile = datafile + ".hdf5"
         else:
             raise TypeError("Argument 'savefile' must be a string.")
 
-        dfile = h5py.File(savefile, "r")
+        dfile = h5py.File(datafile, "r")
 
         dset_positions = dfile["positions"]
         dset_scale_factor = dfile["scale-factors"]
