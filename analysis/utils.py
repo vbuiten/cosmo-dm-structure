@@ -35,5 +35,20 @@ def randomPositions(n_particles, dim, box_size):
     return random_pos
 
 
-def countPairs():
-    pass
+def countPairs(positions1, positions2, bin_edges):
+
+    distances = distanceBetweenPositionSets(positions1, positions2)
+
+    counts, bin_edges = np.histogram(distances, bins=bin_edges)
+    widths = bin_edges[1:] - bin_edges[:-1]
+    bin_mids = bin_edges[:-1] + 0.5 * widths
+
+    return counts, bin_mids
+
+
+def corrFuncLandySzalay(counts_data, counts_random, counts_data_random):
+
+    numerator = counts_data - 2 * counts_data_random + counts_random
+    corr_func = numerator / counts_random
+
+    return corr_func
