@@ -22,6 +22,9 @@ class Animation3D:
         self.ax.set_ylabel(r"$y$")
         self.ax.set_zlabel(r"$z$")
 
+        self.fig.suptitle(r"Simulation for $\Omega_m$ = {}; $\Omega_\Lambda$ = {};"
+                          r" $\Omega_k$ = {}".format(self.history.Om0, self.history.Ode0, self.history.Ok0))
+
         self.label_time = self.ax.set_title("a = {}".format(np.around(self.history.scale_factors[0], 4)))
 
 
