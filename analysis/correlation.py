@@ -24,7 +24,7 @@ class CorrelationFunction:
 
         # get all data-data pairs, random-random pairs and data-random pairs
         # and make a histogram of them
-        distance_edges = np.arange(0., self.history.size, 0.01*self.history.size)
+        distance_edges = np.arange(0., self.history.size, 0.02*self.history.size)
         counts_data, self.distance_mids = countPairs(self.positions_final, self.positions_final, distance_edges)
         counts_random, _ = countPairs(random_positions, random_positions, distance_edges)
         counts_data_random, _ = countPairs(self.positions_final, random_positions, distance_edges)
@@ -49,6 +49,13 @@ class CorrelationFunction:
     def plot(self):
 
         self.ax.plot(self.distance_mids, self.corr_func, label=self.label)
+        self.ax.legend()
+
+
+    def addOther(self, other_corr_func):
+
+        self.ax.plot(other_corr_func.distance_mids, other_corr_func.corr_func,
+                     label=other_corr_func.label)
         self.ax.legend()
 
 
