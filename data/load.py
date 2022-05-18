@@ -20,6 +20,11 @@ class History:
         self.size = dfile.attrs["linear-size"]
         self.cell_size = dfile.attrs["cell-size"]
 
+        # load cosmological parameters
+        self.Om0 = dfile.attrs["Om0"]
+        self.Ode0 = dfile.attrs["Ode0"]
+        self.Ok0 = dfile.attrs["Ok0"]
+
         self.n_times, self.n_particles, self.dim = self.positions.shape
 
         dfile.close()

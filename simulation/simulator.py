@@ -110,6 +110,11 @@ class Simulator:
             file.attrs["linear-size"] = self.part_mesh.size
             file.attrs["cell-size"] = 1.
 
+            # save cosmological parameters
+            file.attrs["Om0"] = self.Om0
+            file.attrs["Ode0"] = self.Ode0
+            file.attrs["Ok0"] = self.Ok0
+
             file.close()
             print ("File created at {}".format(savefile))
 
