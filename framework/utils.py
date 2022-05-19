@@ -52,7 +52,7 @@ def nearestGridPointDensity(positions, mids_tuple):
     return density
 
 
-@jit(nopython=False)
+#@jit(nopython=False)
 def cloudInCellDensity(positions, mids_tuple, size):
 
     dim = len(mids_tuple)
