@@ -24,7 +24,7 @@ class CorrelationFunction:
 
         # get all data-data pairs, random-random pairs and data-random pairs
         # and make a histogram of them
-        distance_edges = np.arange(0., self.history.size, 0.02*self.history.size)
+        distance_edges = np.arange(0., self.history.size, 0.05*self.history.size)
         counts_data, self.distance_mids = countPairs(self.positions_final, self.positions_final, distance_edges)
         counts_random, _ = countPairs(random_positions, random_positions, distance_edges)
         counts_data_random, _ = countPairs(self.positions_final, random_positions, distance_edges)
@@ -34,9 +34,9 @@ class CorrelationFunction:
 
         self.fig, self.ax = plt.subplots(dpi=240)
         self.fig.suptitle("Estimated Pair Correlation Function")
-        self.label = ("$\Omega_m =$ {}; $\Omega_\Lambda =$ {}; $\Omega_k =$ {}".format(self.history.Om0,
-                                                                                       self.history.Ode0,
-                                                                                       self.history.Ok0))
+        self.label = "$\Omega_m =$ {}; $\Omega_\Lambda =$ {}; $\Omega_k =$ {}".format(np.around(self.history.Om0, 3),
+                                                                                       np.around(self.history.Ode0, 3),
+                                                                                       np.around(self.history.Ok0, 3))
 
         self.ax.set_xlabel(r"Separation $r$")
         self.ax.set_ylabel(r"$\xi (r)$")
@@ -48,17 +48,22 @@ class CorrelationFunction:
 
     def plot(self):
 
-        self.ax.plot(self.distance_mids, self.corr_func, label=self.label)
+        self.ax.plot(self.distance_mids, self.corr_func, label=self.label, alpha=0.7, lw=2)
         self.ax.legend()
 
 
     def addOther(self, other_corr_func):
 
         self.ax.plot(other_corr_func.distance_mids, other_corr_func.corr_func,
-                     label=other_corr_func.label)
+                     label=other_corr_func.label, alpha=0.7, lw=2)
         self.ax.legend()
 
 
     def show(self):
 
         self.fig.show()
+
+
+    def save(self, savefile):
+
+        self.fig.savefig(savefile)

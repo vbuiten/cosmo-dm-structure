@@ -73,7 +73,7 @@ class Simulator:
         self.part_mesh.particles.momenta = new_mom
 
 
-    def evolve(self, scale_end, savefile=None):
+    def evolve(self, scale_end, savefile=None, save_step=0.001, save_err_thresh=1e-5):
         '''
         Evolves the simulation and optionally saves the data.
 
@@ -87,16 +87,23 @@ class Simulator:
         scale_factors = np.arange(self.scale_factor, scale_end, self.timestep)
         self.backwardsEulerHalfStep(self.scale_factor)
 
-        # store the particle positions at every point in time
-        positions_history = np.zeros((len(scale_factors), self.part_mesh.n_particles, self.part_mesh.dim))
+        # store the particle positions at every save_step
+        scale_factors_history = []
+        positions_history = []
 
         for i, a in enumerate(scale_factors):
 
-            positions_history[i] = self.part_mesh.particles.positions
+            if abs(((a - self.scale_factor) / save_step) % 1) < save_err_thresh:
+                scale_factors_history.append(a)
+                positions_history.append(self.part_mesh.particles.positions)
+
             self.step(a)
 
-            if abs((a - self.scale_factor) % 0.001) < 1e-5:
+            if abs(((a - self.scale_factor) / save_step) % 1) < save_err_thresh:
                 print ("Scale factor:", np.around(a,3))
+
+        positions_history = np.array(positions_history)
+        scale_factors_history = np.array(scale_factors_history)
 
 
         # save the simulation data to a file if savefile is not None
@@ -106,7 +113,7 @@ class Simulator:
 
             file = h5py.File(savefile, "w")
             pos_dset = file.create_dataset("positions", data=positions_history)
-            scale_fac_dset = file.create_dataset("scale-factors", data=scale_factors)
+            scale_fac_dset = file.create_dataset("scale-factors", data=scale_factors_history)
             file.attrs["linear-size"] = self.part_mesh.size
             file.attrs["cell-size"] = 1.
 
