@@ -7,7 +7,7 @@ from framework.particle_mesh import ParticleMesh
 from simulation.simulator import Simulator
 
 folder = "/net/vdesk/data2/buiten/COP/cosmo_sims_data/"
-linear_size = 50
+linear_size = 100
 n_particles = 256
 dim = 3
 
@@ -23,7 +23,7 @@ z_start = 1000
 a_start = 1e-3
 a_step = 1e-3
 a_step_save = 1e-3
-a_end = 0.1
+a_end = 1.0
 
 matter_densities = np.array([0.3, 0.6, 0.9])
 lambda_densities = 1. - matter_densities

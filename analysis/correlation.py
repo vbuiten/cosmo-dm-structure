@@ -45,6 +45,8 @@ class CorrelationFunction:
         self.ax.grid(which="major")
         self.ax.grid(which="minor", alpha=.1, color="grey")
 
+        self.ax.set_xscale("log")
+
 
     def plot(self):
 
