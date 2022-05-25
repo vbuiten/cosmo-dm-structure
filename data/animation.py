@@ -2,12 +2,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, FFMpegWriter
 plt.rcParams["font.family"] = "serif"
-plt.rcParams["animation.ffmpeg_path"] = r"C:\Program Files\FFmpeg\bin\ffmpeg.exe"
 from data.load import History
 
 
 
 class Animation3D:
+    '''
+    Class for making 3D animations of the particle positions throughout a pre-run simulations.
+
+    Attributes:
+        history: History instance
+            History object containing the simulation data.
+        fig: matplotlib Figure instance
+            Figure object for the simulation.
+        ax: matplotlib Axes instance
+            Axes object for the simulation.
+        frame: matplotlib Line3D instance
+            Object containing the drawn points in the plot.
+        label_time: str
+            Label indicating the scale factor at each time stamp.
+        anim: matplotlib FuncAnimation instance
+            The FuncAnimation object containing the animation.
+
+    Methods:
+        plotSnapshot(snapshot_idx):
+        animate():
+        save(savefile):
+    '''
+
     def __init__(self, datafile):
 
         self.history = History(datafile)
@@ -30,6 +52,16 @@ class Animation3D:
 
 
     def plotSnapshot(self, snapshot_idx):
+        '''
+        Plot one snapshot of the simulatoin data. Used as a helper function for creating the simulation.
+
+        Args:
+            snapshot_idx: int
+                Index of the snapshot to plot.
+
+        Returns:
+
+        '''
 
         self.frame.set_xdata(self.history.positions[snapshot_idx,:,0])
         self.frame.set_ydata(self.history.positions[snapshot_idx,:,1])
@@ -38,14 +70,35 @@ class Animation3D:
         self.label_time.set_text("a = {}".format(np.around(self.history.scale_factors[snapshot_idx], 4)))
 
     def animate(self):
+        '''
+        Create the animation of the simulation data.
+
+        Returns:
+
+        '''
 
         self.anim = FuncAnimation(self.fig, self.plotSnapshot, frames=self.history.n_times,
                                   blit=False, cache_frame_data=False, repeat=False)
 
     def save(self, savefile):
+        '''
+        Save the created animation of the simulation.
+
+        Args:
+            savefile: str
+                File to save the animation to (preferably mp4).
+
+        Returns:
+
+        '''
 
         writer = FFMpegWriter(fps=10)
-        self.anim.save(savefile, writer=writer)
+
+        try:
+            self.anim.save(savefile, writer=writer)
+        except:
+            plt.rcParams["animation.ffmpeg_path"] = r"C:\Program Files\FFmpeg\bin\ffmpeg.exe"
+            self.anim.save(savefile, writer=writer)
 
         # save the figure to avoid overplotting
         self.fig.clf()
