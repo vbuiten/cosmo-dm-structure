@@ -13,6 +13,16 @@ class Grid:
             Density field in the box.
         overdensities: ndarray of shape (size, size, size) or (size, size), depending on the dimensions.
             Overdensity field in the box.
+        mids1d: ndarray of shape (size,)
+            Midpoints of the grid cells, given as a 1D array.
+        mids_tuple: tuple of shape (dim,)
+            Midpoints of the grid cells in all dimensions.
+        x_mids: ndarray of shape (size, size) or (size, size, size)
+            x-array for numpy meshgrid specifying the grid.
+        y_mids: ndarray of shape (size, size) or (size, size, size)
+            y-array for numpy meshgrid specifying the grid.
+        z_mids: ndarray of shape (size, size, size)
+            z-array for numpy meshgrid specifying the grid. Only exists if dim == 3.
 
     Methods:
         potential(Om0, scale_factor):
@@ -56,9 +66,6 @@ class Grid:
         # initialise a universe with uniform density 1
         self._densities = np.ones_like(self.x_mids)
 
-        # for now use nearest grid point density assignment
-        # i.e. particles are point-like
-
 
     @property
     def densities(self):
@@ -69,7 +76,9 @@ class Grid:
             self._densities: ndarray of shape (size, size, size) or (size, size)
                 The density field.
         '''
+
         return self._densities
+
 
     @densities.setter
     def densities(self, dens):
@@ -100,6 +109,7 @@ class Grid:
 
         return self._overdensities
 
+
     @overdensities.setter
     def overdensities(self, overdens):
         '''
@@ -112,7 +122,6 @@ class Grid:
 
         if isinstance(overdens, np.ndarray) and overdens.shape == self.x_mids.shape:
             self._overdensities = overdens
-            #self._densities = overdens + 1
 
         else:
             raise TypeError("Given overdensity should contain the density evaluated at each grid midpoint.")
@@ -132,9 +141,6 @@ class Grid:
         overdens = np.fft.ifftshift(self.overdensities)
         overdens_fft = np.fft.fftn(overdens)
         overdens_fft = np.fft.fftshift(overdens_fft)
-
-        #print ("Shape of FFT: {}".format(overdens_fft.shape))
-        #prefactor = -3/2 * Om0 / scale_factor
 
         # compute the Green's function
         prefactor = -3/8 * Om0 / scale_factor
@@ -160,7 +166,6 @@ class Grid:
                         k_squared[i,j,l] = freqs[i]**2 + freqs[j]**2 + freqs[l]**2
                         sine_terms[i,j,l] = np.sin(freqs[i] / self.size)**2 + np.sin(freqs[j] / self.size)**2 + np.sin(freqs[l] / self.size)**2
 
-        #potential_fft = prefactor / k_squared * overdens_fft
         potential_fft = prefactor / sine_terms * overdens_fft
 
         # manually set the potential (in k-space) to 0 in places where k^2 = 0

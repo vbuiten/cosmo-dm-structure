@@ -9,6 +9,19 @@ class ParticleSet:
             Comoving coordinates of the particles.
         momenta: ndarray of shape (n_particles, dim)
             "Momenta" of the particles. Momentum here is defined as the peculiar velocity divided by the scale factor.
+        dim: int
+            Number of dimensions. Must be either 2 or 3.
+        n_particles: int
+            Number of particles.
+        size: int
+            Linear size of the box in terms of the number of grid cells.
+
+    Methods:
+        uniformRandomPositions():
+            Randomly draw particle positions from a uniform random distribution, such that the particles have equal
+            probability to be anywhere in the box.
+        zeroMomenta():
+            Set the particle momenta to zero in all directions.
     '''
 
     def __init__(self, size, dim, n_particles):
