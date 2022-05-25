@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, FFMpegWriter
 plt.rcParams["font.family"] = "serif"
+plt.rcParams["animation.ffmpeg_path"] = r"C:\Program Files\FFmpeg\bin\ffmpeg.exe"
 from data.load import History
 
 

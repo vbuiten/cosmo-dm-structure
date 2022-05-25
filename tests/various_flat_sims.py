@@ -6,9 +6,13 @@ from framework.particles import ParticleSet
 from framework.particle_mesh import ParticleMesh
 from simulation.simulator import Simulator
 
+'''
 folder = "/net/vdesk/data2/buiten/COP/cosmo_sims_data/"
-linear_size = 100
-n_particles = 256
+'''
+
+folder = r"C:\Users\victo\Documents\Uni\COP\open_project\sim_data\\"
+linear_size = 20
+n_particles = 8**3
 dim = 3
 
 grid = Grid(linear_size, dim)
@@ -19,8 +23,7 @@ particles.zeroMomenta()
 pm = ParticleMesh(grid, particles, method="CIC")
 pm.densityFromParticles()
 
-z_start = 1000
-a_start = 1e-3
+a_start = 1e-2
 a_step = 1e-3
 a_step_save = 1e-3
 a_end = 1.0
