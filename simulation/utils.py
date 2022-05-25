@@ -14,7 +14,9 @@ def friedmannFactor(scale_factor, Om0=0.3, Ode0=0.7, Ok0=0.):
             The present-day dark energy (i.e. cosmological constant) density parameter.
     :param Ok0: float
             The present-day curvature density parameter.
-    :return: f_factor: float
+
+    :return:
+        f_factor: float
             The Friedmann factor f(a).
     '''
 
@@ -34,7 +36,10 @@ def particlesAccelerationFromPotential(grid_mids_tuple, potential_field, particl
             The field in the potential evaluated on a meshgrid (with Cartesian indexing).
     :param particle_pos: ndarray of shape (n_particles, size)
             The particle positions
+
     :return:
+        acceleration_particles: ndarray of shape (n_particles, dim)
+            Acceleration of the particles.
     '''
 
     acceleration_field = - np.array(np.gradient(np.flip(potential_field.real, axis=0))).T
