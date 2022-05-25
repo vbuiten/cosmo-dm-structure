@@ -1,3 +1,5 @@
+'''File for checking the potential computation in 2D.'''
+
 import matplotlib.pyplot as plt
 plt.rcParams["font.family"] = "serif"
 from framework.mesh import Grid

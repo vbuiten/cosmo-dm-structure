@@ -1,3 +1,5 @@
+'''File for running several simulations for a flat universe.'''
+
 import matplotlib.pyplot as plt
 import numpy as np
 plt.rcParams["font.family"] = "serif"

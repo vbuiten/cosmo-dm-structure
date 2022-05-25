@@ -1,3 +1,5 @@
+'''File for testing 3D simulation code.'''
+
 import matplotlib.pyplot as plt
 plt.rcParams["font.family"] = "serif"
 from framework.mesh import Grid

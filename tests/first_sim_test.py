@@ -1,3 +1,5 @@
+'''File for testing 2D simulation code and the density assignment.'''
+
 import matplotlib.pyplot as plt
 plt.rcParams["font.family"] = "serif"
 from matplotlib.colors import TwoSlopeNorm
