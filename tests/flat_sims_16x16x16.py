@@ -7,8 +7,8 @@ from framework.particle_mesh import ParticleMesh
 from simulation.simulator import Simulator
 
 folder = "/net/vdesk/data2/buiten/COP/cosmo_sims_data/"
-linear_size = 30
-n_particles = 16**3
+linear_size = 20
+n_particles = 8**3
 dim = 3
 
 grid = Grid(linear_size, dim)
@@ -30,10 +30,10 @@ Ok0 = 0.
 
 for Om0, Ode0 in zip(matter_densities, lambda_densities):
 
-    savefile = "{}zstart100_flat_size{}_N{}_Omega_m_{}.hdf5".format(folder, linear_size, n_particles, Om0)
+    savefile = "{}zstart100_timestep1e-4_flat_size{}_N{}_Omega_m_{}.hdf5".format(folder, linear_size, n_particles, Om0)
 
     print ("Starting simulation for $\Omega_m =$ {}".format(Om0))
     sim = Simulator(pm, a_start, a_step, Om0, Ode0, Ok0)
-    sim.evolve(a_end, savefile, save_step=a_step_save, save_err_thresh=1e-3)
+    sim.evolve(a_end, savefile, save_step=a_step_save, save_err_thresh=.1)
 
     print ("Finished for $\Omega_m = $ {}".format(Om0))

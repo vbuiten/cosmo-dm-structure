@@ -7,7 +7,7 @@ from data.load import History
 
 class CorrelationFunction:
 
-    def __init__(self, history):
+    def __init__(self, history, logbins=False):
 
         if isinstance(history, History):
             self.history = history
@@ -21,10 +21,17 @@ class CorrelationFunction:
 
         # get the latest positions
         self.positions_final = self.history.positions[-1]
+        self.scale_factor_final = self.history.scale_factors[-1]
 
         # get all data-data pairs, random-random pairs and data-random pairs
         # and make a histogram of them
-        distance_edges = np.arange(0., self.history.size, 0.05*self.history.size)
+
+        if logbins:
+            distance_edges = np.logspace(np.log10(0.0001), np.log10(self.history.size),
+                                         int(np.sqrt(self.history.n_particles)))
+        else:
+            distance_edges = np.linspace(0., self.history.size/2, int(np.sqrt(self.history.n_particles)))
+
         counts_data, self.distance_mids = countPairs(self.positions_final, self.positions_final, distance_edges)
         counts_random, _ = countPairs(random_positions, random_positions, distance_edges)
         counts_data_random, _ = countPairs(self.positions_final, random_positions, distance_edges)
@@ -34,6 +41,7 @@ class CorrelationFunction:
 
         self.fig, self.ax = plt.subplots(dpi=240)
         self.fig.suptitle("Estimated Pair Correlation Function")
+        self.ax.set_title(r"$a =$ {}".format(str(np.around(self.scale_factor_final, 3))))
         self.label = "$\Omega_m =$ {}; $\Omega_\Lambda =$ {}; $\Omega_k =$ {}".format(np.around(self.history.Om0, 3),
                                                                                        np.around(self.history.Ode0, 3),
                                                                                        np.around(self.history.Ok0, 3))

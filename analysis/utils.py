@@ -46,9 +46,9 @@ def countPairs(positions1, positions2, bin_edges):
     return counts, bin_mids
 
 
-def corrFuncLandySzalay(counts_data, counts_random, counts_data_random):
+def corrFuncLandySzalay(counts_data, counts_random, counts_data_random, floor_value=0.):
 
     numerator = counts_data - 2 * counts_data_random + counts_random
-    corr_func = numerator / counts_random
+    corr_func = numerator / (counts_random + floor_value)
 
     return corr_func
