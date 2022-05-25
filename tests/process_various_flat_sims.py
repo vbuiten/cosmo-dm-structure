@@ -1,3 +1,5 @@
+'''File for processing a series of simulations of a flat universe.'''
+
 from data.animation import Animation3D
 from analysis.correlation import CorrelationFunction
 import numpy as np
@@ -30,11 +32,9 @@ for Om0 in Om0s:
     datafile = "{}zstart100_flat_size{}_N{}_Omega_m_{}.hdf5".format(datafolder, linear_size, n_particles, Om0)
     animfile = "{}flat_size{}_N{}_Omega_m_{}.mp4".format(datafolder, linear_size, n_particles, Om0)
 
-    '''
     animation = Animation3D(datafile)
     animation.animate()
     animation.save(animfile)
-    '''
 
     print ("Finished animating for $\Omega_m = $ {}".format(Om0))
 

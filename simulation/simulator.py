@@ -1,13 +1,55 @@
-import numpy as np
-from framework.mesh import Grid
-from framework.particles import ParticleSet
 from framework.particle_mesh import ParticleMesh
 from simulation.utils import *
 import h5py
-from IPython import embed
 
 class Simulator:
+    '''
+    Class for evolving a system specified by a ParticleMesh object and certain cosmological parameters.
+
+    Attributes:
+        part_mesh: ParticleMesh instance
+            ParticleMesh object containing information on the field and particles.
+        timestep: float
+            Time step to use in terms of the scale factor.
+        scale_factor: float
+            Scale factor in the current state of the simulation.
+        Om0: float
+            Present-day matter density parameter. Default is 0.3.
+        Ok0: float
+            Present-day curvature density parameter. Default is 0.
+        Ode0: float
+            Present-day dark energy (cosmological constant) density parameter. Default is 0.7.
+
+    Methods:
+        backwardsEulerHalfStep(scale_factor):
+            Take half a step back in time to get momenta evaluated at half-steps. Used as a starting point for
+            leapfrog integration.
+        forwardsEulerHalfStep(scale_factor):
+            Take half a step forward in time to get mmomenta evaluated at full steps again. To be used after integrating
+            through a leapfrog scheme.
+        step(scale_factor):
+            Take a single simulation step.
+        evolve(scale_end, savefile=None, save_step=0.001, save_err_thresh=1e-5):
+            Evolve the simulation up to some desired scale factor. Automatically used backwards and forwards Euler
+            before and after using leapfrog integration.
+    '''
+
     def __init__(self, part_mesh, a_start, timestep, Om0=0.3, Ode0=0.7, Ok0=0.):
+        '''
+
+        :param part_mesh: ParticleMesh instance
+            ParticleMesh object containing information on the field and particles.
+        :param a_start: float
+            Scale factor at which to start the simulation.
+        :param timestep: float
+            Time step to use in terms of the scale factor.
+        :param Om0: float
+            Present-day matter density parameter. Default is 0.3.
+        :param Ode0: float
+            Present-day dark energy (cosmological constant) density parameter. Default is 0.7.
+        :param Ok0: float
+            Present-day curvature density parameter. Default is 0.
+        '''
 
         if isinstance(part_mesh, ParticleMesh):
             self.part_mesh = part_mesh
@@ -22,6 +64,14 @@ class Simulator:
 
 
     def backwardsEulerHalfStep(self, scale_factor):
+        '''
+        Take a half-step of backward Euler such that the momenta are now evaluated at half-times. This is useful for
+        setting up a leapfrog integration scheme.
+
+        :param scale_factor: float
+            Scale factor in the current state of the simulation.
+        :return:
+        '''
 
         # compute the momenta at half-step n = -1/2
         self.part_mesh.densityFromParticles()
@@ -38,6 +88,14 @@ class Simulator:
 
 
     def forwardsEulerHalfStep(self, scale_factor):
+        '''
+        Take a half-step of forward Euler such that the momenta are evaluated at full steps again. This is useful to
+        call after using leapfrog integration
+
+        :param scale_factor: float
+            Scale factor in the current state of the simulation.
+        :return:
+        '''
 
         # compute the momenta at half-step n/2 + 1/2
         self.part_mesh.densityFromParticles()
@@ -55,6 +113,14 @@ class Simulator:
 
 
     def step(self, scale_factor):
+        '''
+        Take a single step of the simulation using leapfrog integration. Assumes that the momenta are given at
+        half-steps (i.e. that an initial backward Euler step has been used).
+
+        :param scale_factor: float
+            Scale factor in the current state of the simulation.
+        :return:
+        '''
 
         self.part_mesh.densityFromParticles()
         potential = self.part_mesh.grid.potential(self.Om0, scale_factor)
@@ -73,14 +139,18 @@ class Simulator:
         self.part_mesh.particles.momenta = new_mom
 
 
-    def evolve(self, scale_end, savefile=None, save_step=0.001, save_err_thresh=1e-5):
+    def evolve(self, scale_end, savefile=None, save_step=0.001):
         '''
-        Evolves the simulation and optionally saves the data.
+        Evolves the simulation and optionally saves the data. A leapfrog integration scheme is used; initial and final
+        half-steps are included.
 
         :param scale_end: float
                 Scale factor at which to end the simulation.
         :param savefile: NoneType or string
                 File to save the data to. If None, the data is not stored. Default is None.
+        :param save_step: float
+                Time step (in terms of scale factor) after which to save the positions.
+
         :return:
         '''
 
@@ -93,18 +163,17 @@ class Simulator:
 
         for i, a in enumerate(scale_factors):
 
-            if abs(((a - self.scale_factor) / save_step) % 1) < save_err_thresh:
+            if np.around((a - self.scale_factor) / save_step, 5) % 1 == 0:
                 scale_factors_history.append(a)
                 positions_history.append(self.part_mesh.particles.positions)
 
             self.step(a)
 
-            if abs(((a - self.scale_factor) / save_step) % 1) < save_err_thresh:
+            if np.around((a - self.scale_factor) / save_step, 5) % 1 == 0:
                 print ("Scale factor:", np.around(a,3))
 
         positions_history = np.array(positions_history)
         scale_factors_history = np.array(scale_factors_history)
-
 
         # save the simulation data to a file if savefile is not None
         if isinstance(savefile, str):

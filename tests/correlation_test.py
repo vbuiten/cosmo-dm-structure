@@ -1,3 +1,5 @@
+'''Test file for testing the code for computing and plotting correlation functions.'''
+
 from analysis.correlation import CorrelationFunction
 
 datafolder = "/net/vdesk/data2/buiten/COP/cosmo_sims_data/"
