@@ -22,7 +22,7 @@ pm.densityFromParticles()
 
 # specify the relevant scale factors and scale factor steps
 a_start = 1e-2
-a_step = 1e-3
+a_step = 1e-4
 a_step_save = 1e-3
 a_end = 3e-2
 
@@ -34,7 +34,7 @@ curv_dens = 0.
 # run and save the simulation
 simfile = "size{}_N{}_Om0_{}_Ode0_{}_Ok0_{}.hdf5".format(linear_size, n_particles, matter_dens, lambda_dens, curv_dens)
 sim = Simulator(pm, a_start, a_step, matter_dens, lambda_dens, curv_dens)
-sim.evolve(a_end, simfile, save_step=a_step_save, save_err_thresh=1e-3)
+sim.evolve(a_end, simfile, save_step=a_step_save)
 
 print ("Finished the simulation.")
 
@@ -45,7 +45,7 @@ animation.animate()
 animation.save(animfile)
 
 # compute and plot the correlation function
-corrfile = "size{}_N{}_Om0_{}_Ode0_{}_Ok0_{}_corr_func.hdf5".format(linear_size, n_particles, matter_dens, lambda_dens,
+corrfile = "size{}_N{}_Om0_{}_Ode0_{}_Ok0_{}_corr_func.png".format(linear_size, n_particles, matter_dens, lambda_dens,
                                                                     curv_dens)
 corr = CorrelationFunction(simfile)
 corr.plot()

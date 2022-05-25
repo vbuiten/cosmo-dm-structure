@@ -38,7 +38,7 @@ a_end = 0.2
 
 # evolve the system
 sim = Simulator(pm, a_start, a_step, Om0=.3, Ode0=.7, Ok0=0.)
-sim.evolve(a_end, savefile=savefile, save_err_thresh=1)
+sim.evolve(a_end, savefile=savefile)
 
 fig2 = plt.figure(dpi=240)
 ax2 = fig2.add_subplot(projection="3d")

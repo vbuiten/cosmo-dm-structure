@@ -139,7 +139,7 @@ class Simulator:
         self.part_mesh.particles.momenta = new_mom
 
 
-    def evolve(self, scale_end, savefile=None, save_step=0.001, save_err_thresh=1e-5):
+    def evolve(self, scale_end, savefile=None, save_step=0.001):
         '''
         Evolves the simulation and optionally saves the data. A leapfrog integration scheme is used; initial and final
         half-steps are included.
@@ -150,9 +150,7 @@ class Simulator:
                 File to save the data to. If None, the data is not stored. Default is None.
         :param save_step: float
                 Time step (in terms of scale factor) after which to save the positions.
-        :param save_err_thresh: float
-                Maximum difference between the actual scale factor and the scale factor at which the positions are to
-                be stored, expressed as a fraction of the saving time step.
+
         :return:
         '''
 
@@ -165,18 +163,17 @@ class Simulator:
 
         for i, a in enumerate(scale_factors):
 
-            if abs(((a - self.scale_factor) / save_step) % 1) < save_err_thresh:
+            if np.around((a - self.scale_factor) / save_step, 5) % 1 == 0:
                 scale_factors_history.append(a)
                 positions_history.append(self.part_mesh.particles.positions)
 
             self.step(a)
 
-            if abs(((a - self.scale_factor) / save_step) % 1) < save_err_thresh:
+            if np.around((a - self.scale_factor) / save_step, 5) % 1 == 0:
                 print ("Scale factor:", np.around(a,3))
 
         positions_history = np.array(positions_history)
         scale_factors_history = np.array(scale_factors_history)
-
 
         # save the simulation data to a file if savefile is not None
         if isinstance(savefile, str):

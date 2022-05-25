@@ -40,6 +40,6 @@ for Om0, Ode0 in zip(matter_densities, lambda_densities):
 
     print ("Starting simulation for $\Omega_m =$ {}".format(Om0))
     sim = Simulator(pm, a_start, a_step, Om0, Ode0, Ok0)
-    sim.evolve(a_end, savefile, save_step=a_step_save, save_err_thresh=1e-3)
+    sim.evolve(a_end, savefile, save_step=a_step_save)
 
     print ("Finished for $\Omega_m = $ {}".format(Om0))
